@@ -14900,7 +14900,7 @@ function bc({innings: e, settings: t, inningsNumber: r, onInningsComplete: n}) {
             }), d.jsxs("div", {
                 className: `transition-opacity ${dr ? "" : "opacity-30 pointer-events-none"}`,
                 children: [d.jsx("div", {
-                    className: "grid grid-cols-4 gap-1.5 mb-1.5",
+                    className: "grid grid-cols-4 gap-1 mb-1",
                     children: [0, 1, 2, 3].map($ => {
                         const he = Oi && $ % 2 !== 0;
                         return d.jsx("button", {
@@ -14909,31 +14909,31 @@ function bc({innings: e, settings: t, inningsNumber: r, onInningsComplete: n}) {
                             }
                             ,
                             title: he ? "Last man — singles blocked" : void 0,
-                            className: `score-btn font-black border transition-all active:scale-95 ${he ? "opacity-30 pointer-events-none bg-secondary text-muted-foreground border-border" : "bg-secondary text-foreground hover:bg-secondary/70 active:bg-primary active:text-primary-foreground border-border"}`,
+                            className: `score-btn font-black border transition-all active:scale-95 text-sm py-2 ${he ? "opacity-30 pointer-events-none bg-secondary text-muted-foreground border-border" : "bg-secondary text-foreground hover:bg-secondary/70 active:bg-primary active:text-primary-foreground border-border"}`,
                             children: $
                         }, $)
                     }
                     )
                 }), d.jsxs("div", {
-                    className: "grid grid-cols-2 gap-1.5 mb-1.5",
+                    className: "grid grid-cols-2 gap-1 mb-1",
                     children: [d.jsx("button", {
                         onClick: () => vt("run", 4),
-                        className: "score-btn bg-primary/20 text-primary border border-primary/40 hover:bg-primary hover:text-primary-foreground font-black",
+                        className: "score-btn bg-primary/20 text-primary border border-primary/40 hover:bg-primary hover:text-primary-foreground font-black text-sm py-2",
                         children: "4"
                     }), d.jsx("button", {
                         onClick: () => vt("run", 6),
-                        className: "score-btn bg-accent/20 text-accent border border-accent/40 hover:bg-accent hover:text-accent-foreground font-black",
+                        className: "score-btn bg-accent/20 text-accent border border-accent/40 hover:bg-accent hover:text-accent-foreground font-black text-sm py-2",
                         children: "6"
                     })]
                 }), d.jsxs("div", {
-                    className: "grid grid-cols-4 gap-1.5",
+                    className: "grid grid-cols-4 gap-1 mb-1",
                     children: [d.jsx("button", {
                         onClick: () => {
                             j("wide"),
                             m("extra_runs")
                         }
                         ,
-                        className: "score-btn bg-yellow-500/15 text-yellow-400 border border-yellow-500/30 text-xs hover:bg-yellow-500 hover:text-black",
+                        className: "score-btn bg-yellow-500/15 text-yellow-400 border border-yellow-500/30 text-xs hover:bg-yellow-500 hover:text-black py-1.5",
                         children: "Wide"
                     }), d.jsx("button", {
                         onClick: () => {
@@ -14941,7 +14941,7 @@ function bc({innings: e, settings: t, inningsNumber: r, onInningsComplete: n}) {
                             m("extra_runs")
                         }
                         ,
-                        className: "score-btn bg-orange-500/15 text-orange-400 border border-orange-500/30 text-xs hover:bg-orange-500 hover:text-black",
+                        className: "score-btn bg-orange-500/15 text-orange-400 border border-orange-500/30 text-xs hover:bg-orange-500 hover:text-black py-1.5",
                         children: "No Ball"
                     }), d.jsx("button", {
                         onClick: () => {
@@ -14949,7 +14949,7 @@ function bc({innings: e, settings: t, inningsNumber: r, onInningsComplete: n}) {
                             m("extra_runs")
                         }
                         ,
-                        className: "score-btn bg-teal-500/15 text-teal-400 border border-teal-500/30 text-xs hover:bg-teal-500 hover:text-black",
+                        className: "score-btn bg-teal-500/15 text-teal-400 border border-teal-500/30 text-xs hover:bg-teal-500 hover:text-black py-1.5",
                         children: "Leg Bye"
                     }), d.jsx("button", {
                         onClick: () => {
@@ -14957,26 +14957,26 @@ function bc({innings: e, settings: t, inningsNumber: r, onInningsComplete: n}) {
                             m("extra_runs")
                         }
                         ,
-                        className: "score-btn bg-sky-500/15 text-sky-400 border border-sky-500/30 text-xs hover:bg-sky-500 hover:text-black",
+                        className: "score-btn bg-sky-500/15 text-sky-400 border border-sky-500/30 text-xs hover:bg-sky-500 hover:text-black py-1.5",
                         children: "Bye"
                     })]
                 }), d.jsxs("div", {
-                    className: "grid grid-cols-4 gap-1.5",
+                    className: "grid grid-cols-4 gap-1",
                     children: [d.jsx("button", {
                         onClick: () => {
                             j("penalty"),
                             m("extra_runs")
                         }
                         ,
-                        className: "score-btn bg-rose-500/15 text-rose-400 border border-rose-500/30 text-xs hover:bg-rose-500 hover:text-black",
+                        className: "score-btn bg-rose-500/15 text-rose-400 border border-rose-500/30 text-xs hover:bg-rose-500 hover:text-black py-1.5",
                         children: "Penalty"
                     }), d.jsx("button", {
                         onClick: () => vt("wicket"),
-                        className: "score-btn bg-destructive/15 text-destructive border border-destructive/30 text-xs hover:bg-destructive hover:text-destructive-foreground",
+                        className: "score-btn bg-destructive/15 text-destructive border border-destructive/30 text-xs hover:bg-destructive hover:text-destructive-foreground py-1.5 font-semibold",
                         children: "Wicket"
                     }), tr ? d.jsx("button", {
                         onClick: () => m("retire_confirm"),
-                        className: "score-btn bg-amber-500/15 text-amber-400 border border-amber-500/30 text-xs hover:bg-amber-500 hover:text-black",
+                        className: "score-btn bg-amber-500/15 text-amber-400 border border-amber-500/30 text-xs hover:bg-amber-500 hover:text-black py-1.5",
                         children: "Retire"
                     }) : d.jsx("div", {
                         className: "score-btn opacity-0 pointer-events-none"
