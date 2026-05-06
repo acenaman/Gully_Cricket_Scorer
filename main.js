@@ -12799,6 +12799,7 @@ function C3({settings: e, teams: t, onComplete: r, onBack: n}) {
       , [S,j] = X.useState(e.relluKattaEnabled ?? !1)
       , [w,T] = X.useState(e.relluKattaName ?? "")
       , [A,E] = X.useState(e.relluKattaPlaysLastOver ?? !1)
+      , [N,G] = X.useState(e.oneTipOneHand ?? !1)
       , C = t ? [...t[0].players.map(_ => _.name), ...t[1].players.map(_ => _.name)].filter( (_, M, P) => P.indexOf(_) === M) : [];
     function O() {
         r({
@@ -12810,7 +12811,8 @@ function C3({settings: e, teams: t, onComplete: r, onBack: n}) {
             retiredCanReturn: b,
             relluKattaEnabled: S && !!w.trim(),
             relluKattaName: w.trim(),
-            relluKattaPlaysLastOver: A
+            relluKattaPlaysLastOver: A,
+            oneTipOneHand: N
         })
     }
     return d.jsxs("div", {
@@ -12906,6 +12908,13 @@ function C3({settings: e, teams: t, onComplete: r, onBack: n}) {
                         children: d.jsx(Wo, {
                             on: b,
                             onToggle: () => x(_ => !_)
+                        })
+                    }), d.jsx(Zo, {
+                        title: "One Tip One Hand",
+                        subtitle: "Catch off one tip counts as a wicket if taken one-handed",
+                        children: d.jsx(Wo, {
+                            on: N,
+                            onToggle: () => G(_ => !_)
                         })
                     })]
                 })]
@@ -13021,6 +13030,15 @@ function C3({settings: e, teams: t, onComplete: r, onBack: n}) {
                             className: "font-bold text-orange-400",
                             children: [w, A ? " · Last Over" : ""]
                         })]
+                    }), d.jsxs("div", {
+                        className: "flex justify-between",
+                        children: [d.jsx("span", {
+                            className: "text-muted-foreground",
+                            children: "One Tip One Hand"
+                        }), d.jsx("span", {
+                            className: `font-bold ${N ? "text-primary" : "text-muted-foreground"}`,
+                            children: N ? "On" : "Off"
+                        })]
                     })]
                 })]
             })]
@@ -13034,6 +13052,87 @@ function C3({settings: e, teams: t, onComplete: r, onBack: n}) {
         })]
     })
 }
+function RolesScreen({teams: e, onComplete: t, onBack: r}) {
+    const [n, l] = X.useState({0: null, 1: null});
+    const [s, u] = X.useState({0: null, 1: null});
+    function f() {
+        const updatedTeams = e.map((team, idx) => ({
+            ...team,
+            captainId: n[idx],
+            wicketkeeperId: s[idx]
+        }));
+        t(updatedTeams);
+    }
+    const teamColors = ["text-primary", "text-accent"];
+    const teamBg = ["bg-primary/10 border-primary/30", "bg-accent/10 border-accent/30"];
+    const teamSelBg = ["bg-primary text-primary-foreground border-primary", "bg-accent text-accent-foreground border-accent"];
+    return d.jsxs("div", {
+        className: "flex flex-col h-full bg-background",
+        children: [d.jsx("div", {
+            className: "flex-shrink-0 bg-card border-b border-border px-5 pt-12 pb-5",
+            children: d.jsxs("div", {
+                className: "flex items-center gap-3",
+                children: [d.jsx("button", {
+                    onClick: r,
+                    className: "w-9 h-9 rounded-xl bg-secondary border border-border flex items-center justify-center text-foreground active:scale-90 transition-all",
+                    children: "\u2190"
+                }), d.jsxs("div", {
+                    children: [d.jsx("h1", {
+                        className: "text-xl font-black text-foreground tracking-tight",
+                        children: "Team Roles"
+                    }), d.jsx("p", {
+                        className: "text-xs text-muted-foreground",
+                        children: "Pick captain & wicketkeeper for each team"
+                    })]
+                })]
+            })
+        }), d.jsx("div", {
+            className: "flex-1 overflow-y-auto px-4 py-4 space-y-4 pb-32",
+            children: e.map((team, idx) => d.jsxs("div", {
+                className: "bg-card border border-border rounded-2xl p-4",
+                children: [d.jsxs("p", {
+                    className: `text-xs font-black uppercase tracking-widest mb-4 ${teamColors[idx]}`,
+                    children: [team.name]
+                }), d.jsxs("div", {
+                    className: "space-y-4",
+                    children: [d.jsxs("div", {
+                        children: [d.jsx("p", {
+                            className: "text-sm font-semibold text-foreground mb-2",
+                            children: "\uD83C\uDFC6 Captain"
+                        }), d.jsx("div", {
+                            className: "flex flex-wrap gap-2",
+                            children: team.players.map(p => d.jsx("button", {
+                                onClick: () => l(prev => ({...prev, [idx]: p.id})),
+                                className: `px-3 py-1.5 rounded-xl text-xs font-bold border transition-all active:scale-95 ${n[idx] === p.id ? teamSelBg[idx] : "bg-secondary text-secondary-foreground border-border"}`,
+                                children: p.name
+                            }, p.id))
+                        })]
+                    }), d.jsxs("div", {
+                        children: [d.jsx("p", {
+                            className: "text-sm font-semibold text-foreground mb-2",
+                            children: "\uD83E\uDDE4 Wicketkeeper"
+                        }), d.jsx("div", {
+                            className: "flex flex-wrap gap-2",
+                            children: team.players.map(p => d.jsx("button", {
+                                onClick: () => u(prev => ({...prev, [idx]: p.id})),
+                                className: `px-3 py-1.5 rounded-xl text-xs font-bold border transition-all active:scale-95 ${s[idx] === p.id ? teamSelBg[idx] : "bg-secondary text-secondary-foreground border-border"}`,
+                                children: p.name
+                            }, p.id))
+                        })]
+                    })]
+                })]
+            }, idx))
+        }), d.jsx("div", {
+            className: "flex-shrink-0 px-4 pb-8 pt-4 bg-background border-t border-border",
+            children: d.jsx("button", {
+                onClick: f,
+                className: "w-full bg-primary text-primary-foreground rounded-2xl py-4 text-base font-black tracking-wide active:scale-95 transition-all shadow-lg shadow-primary/20",
+                children: "Proceed to Toss \u2192"
+            })
+        })]
+    })
+}
+
 const ej = 2400;
 function Tm() {
     const e = new Uint32Array(1);
@@ -13835,6 +13934,9 @@ function bc({innings: e, settings: t, inningsNumber: r, onInningsComplete: n}) {
       , [J,ee] = X.useState("")
       , Z = X.useRef(null)
       , B = X.useRef(new Set)
+      , Fn = X.useRef(null)
+      , Jn = X.useRef(null)
+      , [qw,Qw] = X.useState(null)
       , [K,ae] = X.useState(!1)
       , [de,R] = X.useState({});
     X.useEffect( () => {
@@ -13901,6 +14003,8 @@ function bc({innings: e, settings: t, inningsNumber: r, onInningsComplete: n}) {
     }
     const ne = u.teams[u.battingTeamIdx]
       , me = u.teams[u.bowlingTeamIdx]
+      , wkId = u.teams[u.bowlingTeamIdx]?.wicketkeeperId
+      , wkName = wkId ? (u.teams[u.bowlingTeamIdx].players.find($ => $.id === wkId)?.name ?? "Wicketkeeper") : null
       , xe = ne.players.find($ => $.id === u.strikerId) ?? ne.players[0]
       , ge = u.nonStrikerId ? ne.players.find($ => $.id === u.nonStrikerId) ?? null : null
       , Ve = u.overs[u.overs.length - 1]
@@ -14018,7 +14122,9 @@ function bc({innings: e, settings: t, inningsNumber: r, onInningsComplete: n}) {
                 runs: 0,
                 isFreehit: yt,
                 strikerName: be?.name ?? "",
-                bowlerName: Ct
+                bowlerName: Ct,
+                dismissalType: $ === "wicket" && Fn.current ? Fn.current.type : void 0,
+                fielderName: $ === "wicket" && Fn.current ? Fn.current.fielderName : void 0
             };
             if ($ === "wide") {
                 const Te = t.wideRuns ?? 1
@@ -14386,6 +14492,26 @@ function bc({innings: e, settings: t, inningsNumber: r, onInningsComplete: n}) {
             m(null))
         }
     }
+    function applyExtraWicket() {
+        const info = Jn.current;
+        if (!info) return;
+        f(pe => {
+            const I = JSON.parse(JSON.stringify(pe));
+            const Ne = I.teams[I.battingTeamIdx];
+            const be = Ne.players.find(Te => Te.id === I.strikerId);
+            const Ct = I.currentBowlerName;
+            if (!be || be.isOut) return I;
+            be.isOut = true;
+            I.wickets += 1;
+            I.bowlers = Mt(I.bowlers, Ct, 0, true, false, false);
+            const nt2 = Ne.players.filter(pl => !pl.isOut && !pl.isRetired && pl.id !== I.nonStrikerId && pl.id !== be.id);
+            const rt2 = Ne.players.filter(pl => pl.isRetired);
+            if (!nt2.length && !rt2.length) I.isComplete = true;
+            else setTimeout(() => m("wicket"), 50);
+            return I;
+        });
+        Jn.current = null;
+    }
     function Ba($) {
         f(pe => {
             const I = JSON.parse(JSON.stringify(pe))
@@ -14436,20 +14562,28 @@ function bc({innings: e, settings: t, inningsNumber: r, onInningsComplete: n}) {
     return d.jsxs("div", {
         className: "flex flex-col h-full bg-background overflow-hidden",
         children: [d.jsxs("div", {
-            className: "flex-shrink-0 bg-card border-b border-border px-4 pt-10 pb-4",
+            className: "flex-shrink-0 bg-card border-b border-border px-4 pb-4",style:{paddingTop:"max(16px,env(safe-area-inset-top))"},
             children: [d.jsxs("div", {
-                className: "flex justify-between items-start mb-1",
+                className: "flex justify-between items-center mb-1",
                 children: [d.jsxs("p", {
                     className: "text-xs font-bold text-muted-foreground uppercase tracking-widest",
                     children: ["Innings ", r, " · ", ne.name]
-                }), u.target && d.jsxs("div", {
-                    className: "text-right",
-                    children: [d.jsx("p", {
-                        className: "text-xs text-muted-foreground",
-                        children: "Target"
-                    }), d.jsx("p", {
-                        className: "text-lg font-black text-accent",
-                        children: u.target
+                }), d.jsxs("div", {
+                    className: "flex items-center gap-2",
+                    children: [u.target && d.jsxs("div", {
+                        className: "text-right",
+                        children: [d.jsx("p", {
+                            className: "text-xs text-muted-foreground",
+                            children: "Target"
+                        }), d.jsx("p", {
+                            className: "text-lg font-black text-accent",
+                            children: u.target
+                        })]
+                    }), d.jsx("button", {
+                        onClick: () => m("scorecard"),
+                        className: "text-2xl leading-none active:scale-90 transition-transform",
+                        title: "Full Scorecard",
+                        children: "📊"
                     })]
                 })]
             }), d.jsxs("div", {
@@ -14472,64 +14606,6 @@ function bc({innings: e, settings: t, inningsNumber: r, onInningsComplete: n}) {
                         className: "text-xs text-muted-foreground",
                         children: ["of ", t.totalOvers, " ov"]
                     })]
-                })]
-            }), u.target !== null && $a !== null && An !== null && d.jsxs("div", {
-                className: `mt-3 rounded-2xl px-3 py-2.5 ${lu}`,
-                children: [d.jsxs("div", {
-                    className: "flex items-center justify-between mb-1.5",
-                    children: [d.jsx("span", {
-                        className: "text-xs text-muted-foreground",
-                        children: "Chase progress"
-                    }), d.jsxs("span", {
-                        className: "text-xs font-bold text-muted-foreground",
-                        children: [u.totalRuns, " / ", u.target]
-                    })]
-                }), d.jsx("div", {
-                    className: "w-full h-2 bg-muted rounded-full overflow-hidden mb-3",
-                    children: d.jsx("div", {
-                        className: `h-full rounded-full transition-all duration-300 ${_t !== null && _t <= Sr ? "bg-primary" : _t !== null && _t <= Sr + 3 ? "bg-accent" : "bg-destructive"}`,
-                        style: {
-                            width: `${pd ?? 0}%`
-                        }
-                    })
-                }), d.jsxs("div", {
-                    className: "grid grid-cols-4 gap-1 text-center",
-                    children: [d.jsxs("div", {
-                        children: [d.jsx("p", {
-                            className: `text-base font-black ${Ia}`,
-                            children: $a
-                        }), d.jsx("p", {
-                            className: "text-xs text-muted-foreground leading-tight",
-                            children: "Needed"
-                        })]
-                    }), d.jsxs("div", {
-                        children: [d.jsx("p", {
-                            className: `text-base font-black ${Ia}`,
-                            children: An
-                        }), d.jsx("p", {
-                            className: "text-xs text-muted-foreground leading-tight",
-                            children: "Balls"
-                        })]
-                    }), d.jsxs("div", {
-                        children: [d.jsx("p", {
-                            className: `text-base font-black ${Ia}`,
-                            children: _t !== null ? _t.toFixed(1) : "—"
-                        }), d.jsx("p", {
-                            className: "text-xs text-muted-foreground leading-tight",
-                            children: "Req RR"
-                        })]
-                    }), d.jsxs("div", {
-                        children: [d.jsx("p", {
-                            className: "text-base font-black text-muted-foreground",
-                            children: Sr.toFixed(1)
-                        }), d.jsx("p", {
-                            className: "text-xs text-muted-foreground leading-tight",
-                            children: "Cur RR"
-                        })]
-                    })]
-                }), _t !== null && d.jsx("p", {
-                    className: `text-center text-xs font-bold mt-2 ${Ia}`,
-                    children: _t <= Sr ? "✅ On track to win!" : _t <= Sr + 3 ? "⚡ Need to push harder" : $a > An ? "❌ Required rate very high" : "🔥 Need big shots now!"
                 })]
             }), d.jsxs("div", {
                 className: "flex gap-3 mt-3 pt-3 border-t border-border",
@@ -14650,223 +14726,8 @@ function bc({innings: e, settings: t, inningsNumber: r, onInningsComplete: n}) {
         }), (_ || P) && d.jsx("div", {
             className: `flex-shrink-0 text-center py-2 text-xs font-bold tracking-wide ${P ? "bg-destructive/20 text-destructive" : "bg-purple-500/20 text-purple-300"}`,
             children: P || `🎙️ ${_}`
-        }), d.jsxs("div", {
-            className: "flex-1 overflow-y-auto px-4 py-3 space-y-3",
-            children: [d.jsxs("div", {
-                className: "bg-card border border-border rounded-2xl overflow-hidden",
-                children: [d.jsx("div", {
-                    className: "px-4 py-2.5 border-b border-border",
-                    children: d.jsxs("p", {
-                        className: "text-xs font-bold text-muted-foreground uppercase tracking-widest",
-                        children: [ne.name, " — Batting"]
-                    })
-                }), d.jsxs("table", {
-                    className: "w-full text-sm",
-                    children: [d.jsx("thead", {
-                        children: d.jsxs("tr", {
-                            className: "border-b border-border",
-                            children: [d.jsx("th", {
-                                className: "px-4 py-2 text-left text-xs text-muted-foreground font-medium",
-                                children: "Batter"
-                            }), d.jsx("th", {
-                                className: "px-3 py-2 text-center text-xs text-muted-foreground font-medium",
-                                children: "R"
-                            }), d.jsx("th", {
-                                className: "px-3 py-2 text-center text-xs text-muted-foreground font-medium",
-                                children: "B"
-                            }), d.jsx("th", {
-                                className: "px-3 py-2 text-center text-xs text-muted-foreground font-medium",
-                                children: "4s·6s"
-                            })]
-                        })
-                    }), d.jsx("tbody", {
-                        className: "divide-y divide-border",
-                        children: ne.players.map($ => d.jsxs("tr", {
-                            className: $.id === u.strikerId ? "bg-primary/5" : $.isOut ? "opacity-40" : $.isRetired ? "opacity-60" : "",
-                            children: [d.jsx("td", {
-                                className: "px-4 py-2.5",
-                                children: d.jsxs("div", {
-                                    className: "flex items-center gap-2",
-                                    children: [d.jsx(yr, {
-                                        name: $.name,
-                                        photo: $.photo,
-                                        size: 26
-                                    }), d.jsxs("div", {
-                                        className: "flex items-center gap-1 min-w-0",
-                                        children: [$.id === u.strikerId && d.jsx("span", {
-                                            className: "text-primary text-xs font-black",
-                                            children: "*"
-                                        }), $.id === u.nonStrikerId && d.jsx("span", {
-                                            className: "text-muted-foreground text-xs font-black",
-                                            children: "†"
-                                        }), d.jsx("span", {
-                                            className: `text-sm font-medium truncate ${$.isOut ? "line-through text-muted-foreground" : "text-foreground"}`,
-                                            children: $.name
-                                        }), $.isOut && d.jsx("span", {
-                                            className: "text-xs text-destructive ml-1",
-                                            children: "out"
-                                        }), $.isRetired && d.jsx("span", {
-                                            className: "text-xs text-amber-400 ml-1",
-                                            children: "ret."
-                                        })]
-                                    })]
-                                })
-                            }), d.jsx("td", {
-                                className: "px-3 py-2.5 text-center font-black text-foreground",
-                                children: $.runs
-                            }), d.jsx("td", {
-                                className: "px-3 py-2.5 text-center text-muted-foreground",
-                                children: $.ballsFaced
-                            }), d.jsxs("td", {
-                                className: "px-3 py-2.5 text-center text-muted-foreground text-xs",
-                                children: [$.fours, "·", $.sixes]
-                            })]
-                        }, $.id))
-                    })]
-                })]
-            }), Jr.length > 0 && d.jsxs("div", {
-                className: "bg-card border border-border rounded-2xl overflow-hidden",
-                children: [d.jsxs("button", {
-                    onClick: () => ae($ => !$),
-                    className: "w-full flex items-center justify-between px-4 py-2.5 border-b border-border",
-                    children: [d.jsx("p", {
-                        className: "text-xs font-bold text-muted-foreground uppercase tracking-widest",
-                        children: "Commentary"
-                    }), d.jsx("span", {
-                        className: "text-xs text-muted-foreground",
-                        children: K ? "▲ hide" : "▼ show"
-                    })]
-                }), K && d.jsx("div", {
-                    className: "divide-y divide-border",
-                    children: Jr.map( ($, he) => {
-                        const pe = $.ball.type === "wicket"
-                          , I = $.ball.runs >= 4;
-                        return d.jsxs("div", {
-                            className: `px-4 py-2.5 flex items-center gap-3 ${pe ? "bg-destructive/10" : I ? "bg-primary/5" : ""}`,
-                            children: [d.jsx("div", {
-                                className: `w-7 h-7 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0 ${Em($.ball).cls}`,
-                                children: Em($.ball).label
-                            }), d.jsx("p", {
-                                className: "text-xs text-foreground leading-relaxed",
-                                children: $.label
-                            })]
-                        }, he)
-                    }
-                    )
-                })]
-            }), u.bowlers.length > 0 && d.jsxs("div", {
-                className: "bg-card border border-border rounded-2xl overflow-hidden",
-                children: [d.jsx("div", {
-                    className: "px-4 py-2.5 border-b border-border",
-                    children: d.jsxs("p", {
-                        className: "text-xs font-bold text-muted-foreground uppercase tracking-widest",
-                        children: [me.name, " — Bowling"]
-                    })
-                }), d.jsxs("table", {
-                    className: "w-full text-sm",
-                    children: [d.jsx("thead", {
-                        children: d.jsxs("tr", {
-                            className: "border-b border-border",
-                            children: [d.jsx("th", {
-                                className: "px-4 py-2 text-left text-xs text-muted-foreground font-medium",
-                                children: "Bowler"
-                            }), d.jsx("th", {
-                                className: "px-3 py-2 text-center text-xs text-muted-foreground font-medium",
-                                children: "O"
-                            }), d.jsx("th", {
-                                className: "px-3 py-2 text-center text-xs text-muted-foreground font-medium",
-                                children: "R"
-                            }), d.jsx("th", {
-                                className: "px-3 py-2 text-center text-xs text-muted-foreground font-medium",
-                                children: "W"
-                            }), d.jsx("th", {
-                                className: "px-3 py-2 text-center text-xs text-muted-foreground font-medium",
-                                children: "Wd"
-                            })]
-                        })
-                    }), d.jsx("tbody", {
-                        className: "divide-y divide-border",
-                        children: u.bowlers.map($ => {
-                            const he = me.players.find(pe => jt(pe.name, $.name));
-                            return d.jsxs("tr", {
-                                className: $.name === u.currentBowlerName ? "bg-primary/5" : "",
-                                children: [d.jsx("td", {
-                                    className: "px-4 py-2.5",
-                                    children: d.jsxs("div", {
-                                        className: "flex items-center gap-2",
-                                        children: [d.jsx(yr, {
-                                            name: $.name,
-                                            photo: he?.photo,
-                                            size: 26
-                                        }), d.jsxs("div", {
-                                            className: "flex items-center gap-1",
-                                            children: [$.name === u.currentBowlerName && d.jsx("span", {
-                                                className: "text-primary text-xs font-black",
-                                                children: "*"
-                                            }), d.jsx("span", {
-                                                className: "text-sm font-medium text-foreground",
-                                                children: $.name
-                                            })]
-                                        })]
-                                    })
-                                }), d.jsxs("td", {
-                                    className: "px-3 py-2.5 text-center text-muted-foreground text-xs",
-                                    children: [$.oversCompleted, $.legalBalls % 6 > 0 ? `.${$.legalBalls % 6}` : ""]
-                                }), d.jsx("td", {
-                                    className: "px-3 py-2.5 text-center font-black text-foreground",
-                                    children: $.runsConceded
-                                }), d.jsx("td", {
-                                    className: "px-3 py-2.5 text-center font-black text-destructive",
-                                    children: $.wickets
-                                }), d.jsx("td", {
-                                    className: "px-3 py-2.5 text-center text-muted-foreground",
-                                    children: $.wides
-                                })]
-                            }, $.name)
-                        }
-                        )
-                    })]
-                })]
-            }), Nn.length > 0 && d.jsxs("div", {
-                className: "bg-card border border-border rounded-2xl overflow-hidden",
-                children: [d.jsx("div", {
-                    className: "px-4 py-2.5 border-b border-border",
-                    children: d.jsx("p", {
-                        className: "text-xs font-bold text-muted-foreground uppercase tracking-widest",
-                        children: "Overs"
-                    })
-                }), d.jsx("div", {
-                    className: "divide-y divide-border",
-                    children: Nn.slice().reverse().map( ($, he) => d.jsxs("div", {
-                        className: "px-4 py-2.5 flex justify-between items-center",
-                        children: [d.jsxs("div", {
-                            children: [d.jsxs("div", {
-                                className: "flex items-center gap-2",
-                                children: [d.jsxs("span", {
-                                    className: "text-xs font-semibold text-muted-foreground",
-                                    children: ["Ov ", Nn.length - he]
-                                }), $.dismissed && d.jsx("span", {
-                                    className: "badge-amber",
-                                    children: "Dismissed"
-                                }), $.bowlerName && d.jsxs("span", {
-                                    className: "text-xs text-muted-foreground",
-                                    children: ["· ", $.bowlerName]
-                                })]
-                            }), d.jsx("p", {
-                                className: "text-xs text-muted-foreground mt-0.5",
-                                children: $.balls.map(pe => pe.type === "wide" ? "Wd" : pe.type === "noball" ? "Nb" : pe.type === "wicket" ? "W" : pe.type === "dot" ? "0" : String(pe.runs)).join(", ")
-                            })]
-                        }), d.jsx("span", {
-                            className: "font-black text-foreground",
-                            children: $.runs
-                        })]
-                    }, he))
-                })]
-            }), d.jsx("div", {
-                className: "h-2"
-            })]
-        }), d.jsxs("div", {
-            className: "flex-shrink-0 bg-card border-t border-border px-3 pt-2 pb-4",
+        }), d.jsx("div", {className: "flex-1"}), d.jsxs("div", {
+            className: "flex-shrink-0 bg-card border-t border-border px-3 pt-2",style:{paddingBottom:"max(16px,env(safe-area-inset-bottom))"},
             children: [d.jsxs("div", {
                 className: "flex gap-1.5 mb-1.5",
                 children: [d.jsx("button", {
@@ -14971,7 +14832,7 @@ function bc({innings: e, settings: t, inningsNumber: r, onInningsComplete: n}) {
                         className: "score-btn bg-rose-500/15 text-rose-400 border border-rose-500/30 text-xs hover:bg-rose-500 hover:text-black py-1.5",
                         children: "Penalty"
                     }), d.jsx("button", {
-                        onClick: () => vt("wicket"),
+                        onClick: () => { Fn.current = null; m("wicket_type"); },
                         className: "score-btn bg-destructive/15 text-destructive border border-destructive/30 text-xs hover:bg-destructive hover:text-destructive-foreground py-1.5 font-semibold",
                         children: "Wicket"
                     }), tr ? d.jsx("button", {
@@ -14986,10 +14847,14 @@ function bc({innings: e, settings: t, inningsNumber: r, onInningsComplete: n}) {
                 })]
             })]
         }), h !== null && d.jsx("div", {
-            className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-end justify-center z-50",
+            className: h === "scorecard" ? "fixed inset-0 z-50 flex flex-col bg-background" : "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-end justify-center z-50",
             children: d.jsxs("div", {
-                className: "bg-card rounded-t-3xl w-full max-w-lg p-5 pb-10 shadow-2xl border-t border-border",
-                children: [h === "striker" && d.jsxs(d.Fragment, {
+                className: h === "scorecard" ? "flex-1 flex flex-col overflow-hidden" : "bg-card rounded-t-3xl w-full max-w-lg shadow-2xl border-t border-border flex flex-col",
+                style: h === "scorecard" ? {} : {maxHeight: "88vh", paddingBottom: "max(24px, env(safe-area-inset-bottom))"},
+                children: [d.jsx("div", {
+                    className: h === "scorecard" ? "overflow-y-auto flex-1 px-4 pb-4 pt-0" : "overflow-y-auto flex-1 px-5 pt-5 pb-4",
+                    children: d.jsxs(d.Fragment, {
+                        children: [h === "striker" && d.jsxs(d.Fragment, {
                     children: [d.jsxs("div", {
                         className: "text-center mb-4",
                         children: [d.jsx("div", {
@@ -15194,6 +15059,81 @@ function bc({innings: e, settings: t, inningsNumber: r, onInningsComplete: n}) {
                         className: "w-full bg-primary text-primary-foreground rounded-2xl py-4 font-black text-base disabled:opacity-40 active:scale-95 transition-all",
                         children: "Start Bowling →"
                     })]
+                }), h === "wicket_type" && d.jsxs(d.Fragment, {
+                    children: [d.jsxs("div", {
+                        className: "text-center mb-5",
+                        children: [d.jsx("div", {
+                            className: "text-4xl mb-1",
+                            children: "\uD83D\uDEA8"
+                        }), d.jsx("h3", {
+                            className: "text-lg font-black text-foreground",
+                            children: "How was he out?"
+                        }), d.jsx("p", {
+                            className: "text-muted-foreground text-sm mt-1",
+                            children: xe?.name + " \u2014 select dismissal type"
+                        })]
+                    }), d.jsx("div", {
+                        className: "grid grid-cols-2 gap-2",
+                        children: [
+                            {id:"bowled", label:"\uD83C\uDFCF Bowled", auto: true, fielder: u.currentBowlerName},
+                            {id:"caught", label:"\uD83E\uDD1C Caught", auto: false},
+                            {id:"caught & bowled", label:"\uD83D\uDC4B Caught & Bowled", auto: true, fielder: u.currentBowlerName},
+                            {id:"stumped", label:"\uD83E\uDDE4 Stumped", auto: true, fielder: wkName ?? u.currentBowlerName},
+                            {id:"run out", label:"\uD83C\uDFC3 Run Out", auto: false},
+                            {id:"lbw", label:"\uD83E\uDDB5 LBW", auto: true, fielder: ""},
+                            {id:"hit wicket", label:"\uD83D\uDCA5 Hit Wicket", auto: true, fielder: ""},
+                            ...(t.oneTipOneHand ? [{id:"1T1H", label:"\u0031\uFE0F\u20E3 One Tip One Hand", auto: false}] : []),
+                            ...(t.oneTipOneHand ? [{id:"1T1H C&B", label:"\u0031\uFE0F\u20E3\uD83D\uDC4B 1T1H C&B", auto: true, fielder: u.currentBowlerName}] : []),
+                            {id:"obstructing", label:"\u26D4 Obstructing", auto: true, fielder: ""},
+                            {id:"handled ball", label:"\u270B Handled Ball", auto: true, fielder: ""},
+                            {id:"timed out", label:"\u23F0 Timed Out", auto: true, fielder: ""}
+                        ].map(opt => d.jsx("button", {
+                            onClick: () => {
+                                if (opt.auto) {
+                                    Fn.current = {type: opt.id, fielderName: opt.fielder ?? ""};
+                                    vt("wicket");
+                                } else {
+                                    Fn.current = {type: opt.id, fielderName: ""};
+                                    m("wicket_fielder");
+                                }
+                            },
+                            className: "py-3 px-3 rounded-2xl border border-border bg-card text-foreground font-bold text-sm active:scale-95 transition-all hover:border-destructive hover:bg-destructive/10 text-left",
+                            children: opt.label
+                        }, opt.id))
+                    }), d.jsx("button", {
+                        onClick: () => m(null),
+                        className: "w-full mt-3 py-2.5 rounded-2xl border border-border text-muted-foreground font-bold text-sm active:scale-95 transition-all",
+                        children: "Cancel"
+                    })]
+                }), h === "wicket_fielder" && d.jsxs(d.Fragment, {
+                    children: [d.jsxs("div", {
+                        className: "text-center mb-4",
+                        children: [d.jsx("div", {
+                            className: "text-4xl mb-1",
+                            children: "\uD83E\uDD1C"
+                        }), d.jsx("h3", {
+                            className: "text-lg font-black text-foreground",
+                            children: Fn.current?.type === "run out" ? "Run Out \u2014 Fielder?" : "Caught by?"
+                        }), d.jsx("p", {
+                            className: "text-xs text-muted-foreground mt-1",
+                            children: Fn.current?.type ?? ""
+                        })]
+                    }), d.jsx("div", {
+                        className: "space-y-2",
+                        children: me.players.map($ => d.jsxs("button", {
+                            onClick: () => {
+                                Fn.current = {...(Fn.current ?? {}), fielderName: $.name};
+                                vt("wicket");
+                            },
+                            className: "w-full flex items-center gap-3 py-3 px-4 rounded-2xl border border-border text-foreground font-bold text-sm hover:border-destructive hover:bg-destructive/10 active:scale-95 transition-all",
+                            children: [d.jsx(yr, {name: $.name, photo: $.photo, size: 36}), d.jsx("span", {children: $.name})]
+                        }, $.id))
+                    }), d.jsx("button", {
+                        onClick: () => m("wicket_type"),
+                        className: "w-full mt-3 py-2.5 rounded-2xl border border-border text-muted-foreground font-bold text-sm active:scale-95 transition-all",
+                        children: "\u2190 Back"
+                    })]
+                
                 }), h === "wicket" && d.jsxs(d.Fragment, {
                     children: [d.jsxs("div", {
                         className: "text-center mb-5",
@@ -15394,26 +15334,278 @@ function bc({innings: e, settings: t, inningsNumber: r, onInningsComplete: n}) {
                             className: `grid gap-3 mb-4 ${Ne.length <= 4 ? "grid-cols-4" : "grid-cols-3"}`,
                             children: Ne.map(Ae => d.jsx("button", {
                                 onClick: () => {
-                                    vt(S, Ae),
-                                    m(null),
-                                    j(null)
+                                    if ((S === "wide" || S === "noball") && qw) {
+                                        const needsF = qw === "run out" || (S === "wide" && qw === "stumped");
+                                        vt(S, Ae); j(null);
+                                        if (needsF) {
+                                            Jn.current = {type: qw, fielderName: ""};
+                                            Qw(null); m("extra_wicket_fielder");
+                                        } else {
+                                            const autoF = qw === "stumped" ? (wkName || u.currentBowlerName) : "";
+                                            Jn.current = {type: qw, fielderName: autoF};
+                                            Qw(null); m(null);
+                                            applyExtraWicket();
+                                        }
+                                    } else {
+                                        vt(S, Ae); m(null); j(null); Qw(null);
+                                    }
                                 }
                                 ,
                                 className: `py-4 rounded-2xl text-xl font-black transition-all active:scale-95 ${Ae === 4 ? "bg-primary/20 text-primary border border-primary/40 hover:bg-primary hover:text-primary-foreground" : Ae === 6 ? "bg-accent/20 text-accent border border-accent/40 hover:bg-accent hover:text-accent-foreground" : Ae === 0 ? "bg-muted text-muted-foreground border border-border" : "bg-card border border-border text-foreground hover:border-primary hover:bg-primary/5"}`,
                                 children: be(Ae)
                             }, Ae))
+                        }), (S === "wide" || S === "noball") && d.jsxs("div", {
+                            className: "mt-1 mb-2",
+                            children: [
+                                d.jsx("p", {className: "text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2", children: "Also a wicket?"}),
+                                d.jsx("div", {
+                                    className: "grid grid-cols-2 gap-2",
+                                    children: (S === "wide" ? [
+                                        {id: "run out", label: "🏃 Run Out"},
+                                        {id: "stumped", label: "🧤 Stumped"},
+                                        {id: "obstructing", label: "⛔ Obstructing"},
+                                        {id: "handled ball", label: "✋ Handled Ball"}
+                                    ] : [
+                                        {id: "run out", label: "🏃 Run Out"},
+                                        {id: "hit wicket", label: "💥 Hit Wicket"},
+                                        {id: "obstructing", label: "⛔ Obstructing"},
+                                        {id: "handled ball", label: "✋ Handled Ball"}
+                                    ]).map(opt => d.jsx("button", {
+                                        onClick: () => Qw(qw === opt.id ? null : opt.id),
+                                        className: `py-2 px-3 rounded-xl border text-xs font-bold text-left transition-all active:scale-95 ${qw === opt.id ? "bg-destructive/20 border-destructive text-destructive" : "bg-card border-border text-muted-foreground hover:border-primary"}`,
+                                        children: opt.label
+                                    }, opt.id))
+                                })
+                            ]
                         }), d.jsx("button", {
-                            onClick: () => {
-                                m(null),
-                                j(null)
-                            }
-                            ,
+                            onClick: () => { m(null); j(null); Qw(null); },
                             className: "w-full py-3 rounded-2xl border border-border text-muted-foreground text-sm font-bold active:scale-95 transition-all",
                             children: "Cancel"
                         })]
                     })
                 }
-                )(), h === "field_placement" && d.jsxs(d.Fragment, {
+                )(), h === "extra_wicket_fielder" && d.jsxs(d.Fragment, {
+                    children: [
+                        d.jsxs("div", {
+                            className: "text-center mb-4",
+                            children: [
+                                d.jsx("div", {className: "text-4xl mb-1", children: "🏃"}),
+                                d.jsx("h3", {className: "text-lg font-black text-foreground", children: Jn.current?.type === "stumped" ? "Stumped by?" : "Run Out — Fielder?"}),
+                                d.jsx("p", {className: "text-xs text-muted-foreground mt-1", children: Jn.current?.type ?? ""})
+                            ]
+                        }),
+                        d.jsx("div", {
+                            className: "space-y-2",
+                            children: me.players.map(pl => d.jsxs("button", {
+                                onClick: () => {
+                                    Jn.current = {...(Jn.current ?? {}), fielderName: pl.name};
+                                    m(null);
+                                    applyExtraWicket();
+                                },
+                                className: "w-full flex items-center gap-3 py-3 px-4 rounded-2xl border border-border text-foreground font-bold text-sm hover:border-destructive hover:bg-destructive/10 active:scale-95 transition-all",
+                                children: [d.jsx(yr, {name: pl.name, photo: pl.photo, size: 36}), d.jsx("span", {children: pl.name})]
+                            }, pl.id))
+                        }),
+                        d.jsx("button", {
+                            onClick: () => { Jn.current = null; Qw(null); m("extra_runs"); },
+                            className: "w-full mt-3 py-2.5 rounded-2xl border border-border text-muted-foreground font-bold text-sm active:scale-95 transition-all",
+                            children: "← Back"
+                        })
+                    ]
+                }), h === "scorecard" && d.jsxs(d.Fragment, {
+                        children: [
+                            d.jsxs("div", {
+                                className: "flex-shrink-0 bg-card border-b border-border px-4 py-3",
+                                style: {paddingTop: "max(12px,env(safe-area-inset-top))"},
+                                children: [
+                                    d.jsxs("div", {
+                                        className: "flex items-center justify-between mb-3",
+                                        children: [
+                                            d.jsx("h2", {className: "text-lg font-black text-foreground", children: "📊 Scorecard"}),
+                                            d.jsx("button", {onClick: () => m(null), className: "w-8 h-8 flex items-center justify-center rounded-full bg-secondary text-foreground font-black text-sm active:scale-90 transition-all", children: "✕"})
+                                        ]
+                                    }),
+                                    d.jsxs("div", {
+                                        className: "flex gap-2",
+                                        children: [
+                                            d.jsx("button", {
+                                                onClick: () => {},
+                                                className: "flex-1 py-1.5 rounded-xl text-xs font-bold bg-primary text-primary-foreground",
+                                                children: "Innings " + r + " · " + ne.name
+                                            })
+                                        ]
+                                    })
+                                ]
+                            }),
+                            d.jsx("div", {
+                                className: "overflow-y-auto flex-1 px-4 py-3 space-y-4",
+                                style: {paddingBottom: "max(16px,env(safe-area-inset-bottom))"},
+                                children: (() => {
+                                    const allBalls = u.overs.flatMap(ov => ov.balls);
+                                    let cumRuns = 0, cumWkts = 0;
+                                    const fowEntries = [];
+                                    for (const ov of u.overs) {
+                                        for (const b of ov.balls) {
+                                            if (b.type !== "wide" && b.type !== "noball") cumRuns += (b.runs ?? 0);
+                                            else cumRuns += (b.runs ?? 1);
+                                            if (b.type === "wicket") {
+                                                cumWkts++;
+                                                fowEntries.push({wkt: cumWkts, runs: cumRuns, batter: b.strikerName ?? "?"});
+                                            }
+                                        }
+                                    }
+                                    const extras = {wides:0, noballs:0, legbyes:0, byes:0, penalty:0};
+                                    for (const b of allBalls) {
+                                        if (b.type === "wide") extras.wides += (b.runs ?? 1);
+                                        else if (b.type === "noball") extras.noballs += (b.runs ?? 1);
+                                        else if (b.type === "legbye") extras.legbyes += (b.runs ?? 0);
+                                        else if (b.type === "bye") extras.byes += (b.runs ?? 0);
+                                        else if (b.type === "penalty") extras.penalty += (b.runs ?? 0);
+                                    }
+                                    const totalExtras = extras.wides + extras.noballs + extras.legbyes + extras.byes + extras.penalty;
+                                    const ovsArr = u.overs;
+                                    return d.jsxs(d.Fragment, {children: [
+                                        d.jsxs("div", {
+                                            className: "bg-muted/40 rounded-2xl overflow-hidden",
+                                            children: [
+                                                d.jsx("div", {className: "px-4 py-2.5 border-b border-border bg-muted/60", children: d.jsx("p", {className: "text-xs font-black text-muted-foreground uppercase tracking-widest", children: "🏏 Batting — " + ne.name})}),
+                                                d.jsxs("table", {
+                                                    className: "w-full text-sm",
+                                                    children: [
+                                                        d.jsx("thead", {children: d.jsxs("tr", {className: "border-b border-border bg-muted/30", children: [
+                                                            d.jsx("th", {className: "px-3 py-2 text-left text-xs text-muted-foreground font-medium", children: "Batter"}),
+                                                            d.jsx("th", {className: "px-1.5 py-2 text-center text-xs text-muted-foreground font-medium", children: "R"}),
+                                                            d.jsx("th", {className: "px-1.5 py-2 text-center text-xs text-muted-foreground font-medium", children: "B"}),
+                                                            d.jsx("th", {className: "px-1.5 py-2 text-center text-xs text-muted-foreground font-medium", children: "4s"}),
+                                                            d.jsx("th", {className: "px-1.5 py-2 text-center text-xs text-muted-foreground font-medium", children: "6s"}),
+                                                            d.jsx("th", {className: "px-1.5 py-2 text-center text-xs text-muted-foreground font-medium", children: "SR"})
+                                                        ]})}),
+                                                        d.jsx("tbody", {className: "divide-y divide-border", children: ne.players.map(pl => {
+                                                            const isStriker = pl.id === u.strikerId;
+                                                            const isNS = pl.id === u.nonStrikerId;
+                                                            const sr = pl.ballsFaced > 0 ? (pl.runs / pl.ballsFaced * 100).toFixed(0) : "-";
+                                                            const rowCls = isStriker ? "bg-primary/8" : pl.isOut ? "opacity-40" : pl.isRetired ? "opacity-55" : "";
+                                                            return d.jsxs("tr", {
+                                                                className: rowCls,
+                                                                children: [
+                                                                    d.jsx("td", {className: "px-3 py-2", children: d.jsxs("div", {children: [
+                                                                        d.jsxs("div", {className: "flex items-center gap-1.5", children: [
+                                                                            d.jsx(yr, {name: pl.name, photo: pl.photo, size: 20}),
+                                                                            isStriker && d.jsx("span", {className: "text-primary text-xs font-black", children: "*"}),
+                                                                            isNS && d.jsx("span", {className: "text-muted-foreground text-xs", children: "†"}),
+                                                                            d.jsx("span", {className: "text-xs font-bold " + (pl.isOut ? "line-through text-muted-foreground" : pl.isRetired ? "text-amber-400" : "text-foreground"), children: pl.name})
+                                                                        ]}),
+                                                                        pl.isOut && d.jsx("p", {className: "text-xs text-muted-foreground ml-6 mt-0.5", children: "out"})
+                                                                    ]})}),
+                                                                    d.jsx("td", {className: "px-1.5 py-2 text-center font-black text-foreground text-sm", children: pl.runs}),
+                                                                    d.jsx("td", {className: "px-1.5 py-2 text-center text-muted-foreground text-xs", children: pl.ballsFaced}),
+                                                                    d.jsx("td", {className: "px-1.5 py-2 text-center text-primary font-semibold text-xs", children: pl.fours > 0 ? pl.fours : "-"}),
+                                                                    d.jsx("td", {className: "px-1.5 py-2 text-center text-accent font-semibold text-xs", children: pl.sixes > 0 ? pl.sixes : "-"}),
+                                                                    d.jsx("td", {className: "px-1.5 py-2 text-center text-muted-foreground text-xs", children: sr})
+                                                                ]
+                                                            }, pl.id);
+                                                        })})
+                                                    ]
+                                                }),
+                                                d.jsxs("div", {
+                                                    className: "px-4 py-2 border-t border-border flex justify-between items-center",
+                                                    children: [
+                                                        d.jsxs("span", {className: "text-xs text-muted-foreground", children: ["Extras: ", totalExtras, extras.wides > 0 ? " (W " + extras.wides + ")" : "", extras.noballs > 0 ? " (NB " + extras.noballs + ")" : "", extras.legbyes > 0 ? " (LB " + extras.legbyes + ")" : "", extras.byes > 0 ? " (B " + extras.byes + ")" : "", extras.penalty > 0 ? " (Pen " + extras.penalty + ")" : ""]}),
+                                                        d.jsxs("span", {className: "text-sm font-black text-foreground", children: [u.totalRuns, "/", u.wickets, " (", (() => { const lb = u.overs.reduce((s,o) => s + o.balls.filter(b => b.type !== "wide" && b.type !== "noball").length, 0); return Math.floor(lb/6) + (lb%6 ? "." + (lb%6) : ""); })(), " ov)"]})
+                                                    ]
+                                                })
+                                            ]
+                                        }),
+                                        fowEntries.length > 0 && d.jsxs("div", {
+                                            className: "bg-muted/40 rounded-2xl overflow-hidden",
+                                            children: [
+                                                d.jsx("div", {className: "px-4 py-2.5 border-b border-border bg-muted/60", children: d.jsx("p", {className: "text-xs font-black text-muted-foreground uppercase tracking-widest", children: "Fall of Wickets"})}),
+                                                d.jsx("div", {
+                                                    className: "px-4 py-2.5 flex flex-wrap gap-x-4 gap-y-1",
+                                                    children: fowEntries.map((f, i) => d.jsxs("span", {
+                                                        className: "text-xs",
+                                                        children: [d.jsx("span", {className: "font-bold text-destructive", children: f.wkt + "-" + f.runs}), d.jsx("span", {className: "text-muted-foreground", children: " (" + f.batter + ")"})]
+                                                    }, i))
+                                                })
+                                            ]
+                                        }),
+                                        u.bowlers.length > 0 && d.jsxs("div", {
+                                            className: "bg-muted/40 rounded-2xl overflow-hidden",
+                                            children: [
+                                                d.jsx("div", {className: "px-4 py-2.5 border-b border-border bg-muted/60", children: d.jsx("p", {className: "text-xs font-black text-muted-foreground uppercase tracking-widest", children: "🎯 Bowling — " + me.name})}),
+                                                d.jsxs("table", {
+                                                    className: "w-full text-sm",
+                                                    children: [
+                                                        d.jsx("thead", {children: d.jsxs("tr", {className: "border-b border-border bg-muted/30", children: [
+                                                            d.jsx("th", {className: "px-3 py-2 text-left text-xs text-muted-foreground font-medium", children: "Bowler"}),
+                                                            d.jsx("th", {className: "px-1.5 py-2 text-center text-xs text-muted-foreground font-medium", children: "O"}),
+                                                            d.jsx("th", {className: "px-1.5 py-2 text-center text-xs text-muted-foreground font-medium", children: "M"}),
+                                                            d.jsx("th", {className: "px-1.5 py-2 text-center text-xs text-muted-foreground font-medium", children: "R"}),
+                                                            d.jsx("th", {className: "px-1.5 py-2 text-center text-xs text-muted-foreground font-medium", children: "W"}),
+                                                            d.jsx("th", {className: "px-1.5 py-2 text-center text-xs text-muted-foreground font-medium", children: "Eco"})
+                                                        ]})}),
+                                                        d.jsx("tbody", {className: "divide-y divide-border", children: u.bowlers.map(bl => {
+                                                            const blp = me.players.find(p => jt(p.name, bl.name));
+                                                            const ovStr = bl.oversCompleted + (bl.legalBalls % 6 > 0 ? "." + (bl.legalBalls % 6) : "");
+                                                            const eco = bl.legalBalls > 0 ? (bl.runsConceded / (bl.legalBalls / 6)).toFixed(1) : "-";
+                                                            const isCurrent = bl.name === u.currentBowlerName;
+                                                            return d.jsxs("tr", {
+                                                                className: isCurrent ? "bg-primary/8" : "",
+                                                                children: [
+                                                                    d.jsx("td", {className: "px-3 py-2", children: d.jsxs("div", {className: "flex items-center gap-1.5", children: [
+                                                                        d.jsx(yr, {name: bl.name, photo: blp?.photo, size: 20}),
+                                                                        isCurrent && d.jsx("span", {className: "text-primary text-xs font-black", children: "*"}),
+                                                                        d.jsx("span", {className: "text-xs font-bold text-foreground", children: bl.name})
+                                                                    ]})}),
+                                                                    d.jsx("td", {className: "px-1.5 py-2 text-center text-muted-foreground text-xs", children: ovStr}),
+                                                                    d.jsx("td", {className: "px-1.5 py-2 text-center text-muted-foreground text-xs", children: bl.maidens ?? 0}),
+                                                                    d.jsx("td", {className: "px-1.5 py-2 text-center font-black text-foreground text-sm", children: bl.runsConceded}),
+                                                                    d.jsx("td", {className: "px-1.5 py-2 text-center font-black text-destructive text-sm", children: bl.wickets}),
+                                                                    d.jsx("td", {className: "px-1.5 py-2 text-center text-muted-foreground text-xs", children: eco})
+                                                                ]
+                                                            }, bl.name);
+                                                        })})
+                                                    ]
+                                                })
+                                            ]
+                                        }),
+                                        ovsArr.length > 0 && d.jsxs("div", {
+                                            className: "bg-muted/40 rounded-2xl overflow-hidden",
+                                            children: [
+                                                d.jsx("div", {className: "px-4 py-2.5 border-b border-border bg-muted/60", children: d.jsx("p", {className: "text-xs font-black text-muted-foreground uppercase tracking-widest", children: "Per Over"})}),
+                                                d.jsxs("table", {
+                                                    className: "w-full text-xs",
+                                                    children: [
+                                                        d.jsx("thead", {children: d.jsxs("tr", {className: "border-b border-border bg-muted/30", children: [
+                                                            d.jsx("th", {className: "px-3 py-2 text-left text-muted-foreground font-medium", children: "Ov"}),
+                                                            d.jsx("th", {className: "px-2 py-2 text-left text-muted-foreground font-medium", children: "Bowler"}),
+                                                            d.jsx("th", {className: "px-2 py-2 text-center text-muted-foreground font-medium", children: "Balls"}),
+                                                            d.jsx("th", {className: "px-2 py-2 text-center text-muted-foreground font-medium", children: "R"}),
+                                                            d.jsx("th", {className: "px-2 py-2 text-center text-muted-foreground font-medium", children: "W"})
+                                                        ]})}),
+                                                        d.jsx("tbody", {className: "divide-y divide-border", children: ovsArr.map((ov, oi) => {
+                                                            const wkts = ov.balls.filter(b => b.type === "wicket").length;
+                                                            const ballLabels = ov.balls.map(b => b.type === "wide" ? "Wd" : b.type === "noball" ? "Nb" : b.type === "wicket" ? "W" : b.type === "legbye" ? "Lb" : b.type === "bye" ? "By" : b.type === "dot" ? "0" : String(b.runs)).join(" ");
+                                                            return d.jsxs("tr", {
+                                                                className: oi % 2 === 0 ? "" : "bg-muted/20",
+                                                                children: [
+                                                                    d.jsx("td", {className: "px-3 py-1.5 font-bold text-muted-foreground", children: oi + 1}),
+                                                                    d.jsx("td", {className: "px-2 py-1.5 text-foreground truncate max-w-[70px]", children: ov.bowlerName ?? "-"}),
+                                                                    d.jsx("td", {className: "px-2 py-1.5 text-muted-foreground", children: ballLabels}),
+                                                                    d.jsx("td", {className: "px-2 py-1.5 text-center font-black text-foreground", children: ov.runs}),
+                                                                    d.jsx("td", {className: "px-2 py-1.5 text-center font-bold " + (wkts > 0 ? "text-destructive" : "text-muted-foreground"), children: wkts > 0 ? wkts : "-"})
+                                                                ]
+                                                            }, oi);
+                                                        })})
+                                                    ]
+                                                })
+                                            ]
+                                        })
+                                    ]});
+                                })()
+                            })
+                        ]
+                    }), h === "field_placement" && d.jsxs(d.Fragment, {
                     children: [d.jsxs("div", {
                         className: "text-center mb-4",
                         children: [d.jsx("div", {
@@ -15471,7 +15663,10 @@ function bc({innings: e, settings: t, inningsNumber: r, onInningsComplete: n}) {
                         className: "w-full bg-primary text-primary-foreground rounded-2xl py-4 font-black active:scale-95 transition-all",
                         children: "Done"
                     })]
-                })]
+                })]}
+)
+        })
+    ]
             })
         })]
     })
@@ -40347,7 +40542,7 @@ function tK({match: e, onDelete: t}) {
                     })]
                 }), d.jsx("span", {
                     className: "text-muted-foreground text-lg",
-                    children: r ? "▲" : "▼"
+                    children: n ? "▲" : "▼"
                 })]
             }), d.jsxs("div", {
                 className: "grid grid-cols-2 gap-3",
@@ -40824,13 +41019,15 @@ function cr({label: e, value: t, highlight: r}) {
         })]
     })
 }
-function nK({b: e, rank: t}) {
-    const [r,n] = X.useState(!1);
+function nK({b: e, rank: t, statType: r}) {
+    const [n,l] = X.useState(!1);
+    const battingStatValue = r === "avg" ? un(e.average, 1) : r === "sr" ? un(e.strikeRate, 1) : r === "hs" ? String(e.highScore) : r === "innings" ? String(e.innings) : String(e.runs);
+    const battingStatLabel = r === "avg" ? "avg" : r === "sr" ? "SR" : r === "hs" ? "HS" : r === "innings" ? "innings" : "runs";
     return d.jsxs("div", {
         className: "bg-card border border-border rounded-2xl overflow-hidden",
         children: [d.jsxs("button", {
             className: "w-full px-4 py-3 flex items-center gap-3 text-left",
-            onClick: () => n(l => !l),
+            onClick: () => l(prev => !prev),
             children: [d.jsx("span", {
                 className: "text-lg font-black text-muted-foreground w-6 text-center",
                 children: t
@@ -40850,16 +41047,16 @@ function nK({b: e, rank: t}) {
                 className: "text-right",
                 children: [d.jsx("p", {
                     className: "text-2xl font-black text-foreground",
-                    children: e.runs
+                    children: battingStatValue
                 }), d.jsx("p", {
                     className: "text-xs text-muted-foreground",
-                    children: "runs"
+                    children: battingStatLabel
                 })]
             }), d.jsx("span", {
                 className: "text-muted-foreground ml-1",
                 children: r ? "▲" : "▼"
             })]
-        }), r && d.jsxs("div", {
+        }), n && d.jsxs("div", {
             className: "border-t border-border px-4 pb-4 pt-3 space-y-2",
             children: [d.jsxs("div", {
                 className: "flex gap-2",
@@ -40906,13 +41103,15 @@ function nK({b: e, rank: t}) {
         })]
     })
 }
-function aK({b: e, rank: t}) {
-    const [r,n] = X.useState(!1);
+function aK({b: e, rank: t, statType: r}) {
+    const [n,l] = X.useState(!1);
+    const bowlingStatValue = r === "economy" ? un(e.economy, 2) : r === "avg" ? un(e.average, 1) : r === "sr" ? un(e.strikeRate, 1) : r === "best" ? e.bestWkts + "/" + e.bestRuns : String(e.wickets);
+    const bowlingStatLabel = r === "economy" ? "economy" : r === "avg" ? "avg" : r === "sr" ? "SR" : r === "best" ? "best" : "wickets";
     return d.jsxs("div", {
         className: "bg-card border border-border rounded-2xl overflow-hidden",
         children: [d.jsxs("button", {
             className: "w-full px-4 py-3 flex items-center gap-3 text-left",
-            onClick: () => n(l => !l),
+            onClick: () => l(prev => !prev),
             children: [d.jsx("span", {
                 className: "text-lg font-black text-muted-foreground w-6 text-center",
                 children: t
@@ -40932,16 +41131,16 @@ function aK({b: e, rank: t}) {
                 className: "text-right",
                 children: [d.jsx("p", {
                     className: "text-2xl font-black text-destructive",
-                    children: e.wickets
+                    children: bowlingStatValue
                 }), d.jsx("p", {
                     className: "text-xs text-muted-foreground",
-                    children: "wickets"
+                    children: bowlingStatLabel
                 })]
             }), d.jsx("span", {
                 className: "text-muted-foreground ml-1",
-                children: r ? "▲" : "▼"
+                children: n ? "▲" : "▼"
             })]
-        }), r && d.jsxs("div", {
+        }), n && d.jsxs("div", {
             className: "border-t border-border px-4 pb-4 pt-3 space-y-2",
             children: [d.jsxs("div", {
                 className: "flex gap-2",
@@ -41277,13 +41476,15 @@ function lK() {
                     children: "No batting data"
                 }) : m.map( (y, b) => d.jsx(nK, {
                     b: y,
-                    rank: b + 1
+                    rank: b + 1,
+                    statType: s
                 }, y.name)) : v.length === 0 ? d.jsx("p", {
                     className: "text-center text-muted-foreground py-10 text-sm",
                     children: "No bowling data"
                 }) : v.map( (y, b) => d.jsx(aK, {
                     b: y,
-                    rank: b + 1
+                    rank: b + 1,
+                    statType: f
                 }, y.name))
             })]
         })]
@@ -41612,6 +41813,13 @@ function pK() {
         n(M => ({
             ...M,
             settings: _,
+            phase: "roles"
+        }))
+    }
+    function vRoles(_) {
+        n(M => ({
+            ...M,
+            teams: _,
             phase: "toss"
         }))
     }
@@ -41759,6 +41967,15 @@ function pK() {
                     teams: r.teams ?? void 0,
                     onComplete: v,
                     onBack: y
+                })
+            });
+        if (r.phase === "roles" && r.teams)
+            return d.jsx("div", {
+                className: "flex flex-col h-full",
+                children: d.jsx(RolesScreen, {
+                    teams: r.teams,
+                    onComplete: vRoles,
+                    onBack: () => n(M => ({...M, phase: "match_settings"}))
                 })
             });
         if (r.phase === "toss" && r.teams)
